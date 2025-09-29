@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khar Skardu - Traditional Guesthouse</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel&display=swap" rel="stylesheet">
+    <style>
+        /* Base Styles */
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: #FBF5EE; /* A very light, warm cream */
+        }
+        .font-playfair {
+            font-family: 'Playfair Display', serif;
+        }
+        .wooden-bg {
+            background-image: url('https://www.transparenttextures.com/patterns/wood-pattern.png'), linear-gradient(to bottom, #6b4f4b, #543c38);
+            background-color: #6b4f4b; /* Fallback color */
+        }
+        .hero-slideshow-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+            z-index: 1;
+        }
+        .hero-slideshow-image.active {
+            opacity: 1;
+            z-index: 2;
+        }
+        .video-bg {
+            background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?q=80&w=2070&auto-format&fit=crop');
+            background-size: cover;
+            background-position: center;
+        }
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+            filter: invert(0.6) brightness(1.5);
+        }
+        .room-gallery .nav-btn {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .room-gallery:hover .nav-btn {
+            opacity: 1;
+        }
+
+        /* Loading Screen Styles */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            transition: opacity 0.75s ease-out;
+        }
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)),
+                        url('https://www.transparenttextures.com/patterns/dark-wood.png');
+            background-size: cover;
+            background-position: center;
+            color: #fff;
+            text-align: center;
+            position: relative;
+        }
+        .loading-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 70px;
+            font-weight: bold;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            background: linear-gradient(90deg, #d4af37, #b8860b, #d4af37); /* darker golden */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: shimmer 3s linear infinite, fadeIn 2s ease forwards;
+            opacity: 0;
+        }
+        .loading-subtitle {
+            font-family: 'Cinzel', serif;
+            font-size: 36px;
+            color: #b0a39f; /* deeper beige */
+            letter-spacing: 3px;
+            margin-top: 15px;
+            opacity: 0;
+            animation: fadeIn 2s ease forwards;
+            animation-delay: 1.5s;
+        }
+        .loading-dots {
+            margin-top: 40px;
+            font-family: 'Cinzel', serif;
+            font-size: 20px;
+            color: #f5f5f5;
+            letter-spacing: 2px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .dot {
+            width: 8px;
+            height: 8px;
+            margin: 0 4px;
+            background: #d4af37; /* darker gold */
+            border-radius: 50%;
+            animation: bounce 1.2s infinite;
+        }
+        .dot:nth-child(2) { animation-delay: 0.2s; }
+        .dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes shimmer {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0.8); opacity: 0.6; }
+            40% { transform: scale(1.3); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="text-gray-800" style="overflow: hidden;">
+
+    <div id="loading-screen">
+        <div class="loading-container">
+            <div class="loading-title">KHAR</div>
+            <div class="loading-subtitle">Skardu</div>
+            <div class="loading-dots">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        </div>
+    </div>
+
+    <main id="main-content" style="display: none;">
+        <header class="relative text-white overflow-hidden h-screen">
+            <div id="hero-slideshow" class="absolute top-0 left-0 w-full h-full">
+                <div class="hero-slideshow-image active" style="background-image: url('/images/bg1.webp');"></div>
+                <div class="hero-slideshow-image" style="background-image: url('/images/bg2.webp');"></div>
+                <div class="hero-slideshow-image" style="background-image: url('/images/bg3.webp');"></div>
+                <div class="hero-slideshow-image" style="background-image: url('/images/bg4.webp');"></div>
+            </div>
+            <div class="absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 z-10"></div>
+
+            <div class="relative z-20 flex flex-col h-full">
+                <nav id="navbar" class="container mx-auto px-6 py-4 flex justify-between items-center fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+                    <a href="#" class="font-playfair text-2xl font-bold">Khar Skardu</a>
+                    <div class="hidden md:flex space-x-6 items-center">
+                        <a href="#about" class="hover:text-amber-200 transition-colors">About</a>
+                        <a href="#seasons" class="hover:text-amber-200 transition-colors">Seasons</a>
+                        <a href="#rooms" class="hover:text-amber-200 transition-colors">Rooms</a>
+                        <a href="#dining" class="hover:text-amber-200 transition-colors">Dining</a>
+                        <a href="#gallery" class="hover:text-amber-200 transition-colors">Gallery</a>
+                        <a href="#blog" class="hover:text-amber-200 transition-colors">Experiences</a>
+                        <a href="#booking" class="bg-amber-800 hover:bg-amber-900 text-white font-bold py-2 px-4 rounded-lg transition-colors">Book Now</a>
+                    </div>
+                    <button id="mobile-menu-button" class="md:hidden">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                    </button>
+                </nav>
+                <div id="mobile-menu" class="hidden md:hidden bg-black bg-opacity-80 fixed top-[68px] left-0 right-0 z-40">
+                    <a href="#about" class="block py-2 px-4 text-sm hover:bg-amber-800">About</a>
+                    <a href="#seasons" class="block py-2 px-4 text-sm hover:bg-amber-800">Seasons</a>
+                    <a href="#rooms" class="block py-2 px-4 text-sm hover:bg-amber-800">Rooms</a>
+                    <a href="#dining" class="block py-2 px-4 text-sm hover:bg-amber-800">Dining</a>
+                    <a href="#gallery" class="block py-2 px-4 text-sm hover:bg-amber-800">Gallery</a>
+                    <a href="#blog" class="block py-2 px-4 text-sm hover:bg-amber-800">Experiences</a>
+                    <a href="#booking" class="block py-2 px-4 text-sm hover:bg-amber-800">Book Now</a>
+                </div>
+
+                <div class="flex-grow flex items-center justify-center text-center pt-[68px]">
+                    <div class="container mx-auto px-6">
+                        <h1 class="font-playfair text-4xl md:text-6xl font-bold leading-tight">Your Traditional Retreat Awaits</h1>
+                        <p class="mt-4 text-lg md:text-xl text-amber-100">Experience timeless hospitality in the heart of nature.</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <section id="booking" class="bg-amber-50 py-12 relative z-10">
+            <div class="container mx-auto px-6">
+                <div class="bg-white rounded-xl shadow-2xl p-6 md:p-8 max-w-4xl mx-auto -mt-24 relative z-20">
+                     <form class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                        <div class="space-y-2">
+                            <label for="checkin" class="text-sm font-semibold text-gray-600">Check-in</label>
+                            <input type="date" id="checkin" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-800">
+                        </div>
+                        <div class="space-y-2">
+                            <label for="checkout" class="text-sm font-semibold text-gray-600">Check-out</label>
+                            <input type="date" id="checkout" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-800">
+                        </div>
+                        <div class="space-y-2">
+                            <label for="guests" class="text-sm font-semibold text-gray-600">Guests</label>
+                            <select id="guests" class="w-full p-3 border border-gray-300 rounded-lg appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-amber-800">
+                                <option>1 Guest</option>
+                                <option selected>2 Guests</option>
+                                <option>3 Guests</option>
+                                <option>4 Guests</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="w-full bg-amber-800 hover:bg-amber-900 text-white font-bold p-3 rounded-lg transition-colors h-12 md:h-auto">Check Availability</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <section id="video" class="py-20 bg-FBF5EE">
+            <div class="container mx-auto px-6 text-center">
+                 <h2 class="font-playfair text-3xl md:text-4xl font-bold text-amber-900">A Glimpse Into Serenity</h2>
+                 <p class="mt-2 text-gray-600 max-w-2xl mx-auto">Discover the soul of The Khar. Press play and step into a world of rustic charm and tranquility.</p>
+                 <div class="mt-8 relative max-w-4xl mx-auto rounded-xl overflow-hidden shadow-2xl cursor-pointer">
+                     <div class="video-bg h-64 md:h-96 w-full flex items-center justify-center">
+                         <div class="bg-white bg-opacity-20 rounded-full p-5 backdrop-blur-sm">
+                             <svg class="w-16 h-16 text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
+                         </div>
+                     </div>
+                 </div>
+            </div>
+        </section>
+
+        <section id="about" class="py-20 bg-amber-50">
+            <div class="container mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <img src="images/about.jpg" alt="Cozy interior of the guesthouse" class="rounded-xl shadow-xl w-full h-auto">
+                </div>
+                <div>
+                    <h2 class="font-playfair text-3xl md:text-4xl font-bold text-amber-900">Crafted from Tradition, Built for Comfort</h2>
+                    <p class="mt-4 text-gray-600">The Khar is more than just a place to stay; it's an experience woven from the threads of local heritage. Our guesthouse is constructed with locally sourced wood, handcrafted by artisans who have passed down their skills through generations.</p>
+                    <p class="mt-4 text-gray-600">We invite you to disconnect from the everyday and reconnect with nature in an environment that prizes authenticity, comfort, and quiet luxury.</p>
+                     <button class="mt-6 bg-transparent border-2 border-amber-800 text-amber-800 hover:bg-amber-800 hover:text-white font-bold py-2 px-6 rounded-lg transition-colors">Learn More</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="seasons" class="py-20">
+            <div class="container mx-auto px-6">
+                <div class="w-full mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden">
+                    <div class="p-6 md:p-10">
+                        <h2 class="font-playfair text-3xl md:text-5xl font-bold text-gray-800 text-center">A View for Every Season</h2>
+                        <p class="text-center text-gray-500 mt-2 md:mt-4 max-w-2xl mx-auto">Experience the unparalleled beauty of Pakistan from the comfort of our guesthouse, where every change in season brings a new, breathtaking landscape.</p>
+                    </div>
+
+                    <div id="tabs-container" class="flex justify-center border-b border-gray-200 bg-gray-50">
+                        <button data-season="winter" class="season-tab active-tab text-amber-800 relative py-4 px-4 sm:px-6 md:px-8 text-sm sm:text-base font-semibold focus:outline-none transition-colors duration-300">
+                            Winter
+                            <span class="absolute bottom-0 left-0 w-full h-0.5 bg-sky-700 transform scale-x-100 transition-transform duration-300"></span>
+                        </button>
+                        <button data-season="autumn" class="season-tab text-gray-500 hover:text-amber-800 relative py-4 px-4 sm:px-6 md:px-8 text-sm sm:text-base font-semibold focus:outline-none transition-colors duration-300">
+                            Autumn
+                            <span class="absolute bottom-0 left-0 w-full h-0.5 bg-orange-600 transform scale-x-0 transition-transform duration-300"></span>
+                        </button>
+                        <button data-season="spring" class="season-tab text-gray-500 hover:text-amber-800 relative py-4 px-4 sm:px-6 md:px-8 text-sm sm:text-base font-semibold focus:outline-none transition-colors duration-300">
+                            Spring
+                            <span class="absolute bottom-0 left-0 w-full h-0.5 bg-rose-500 transform scale-x-0 transition-transform duration-300"></span>
+                        </button>
+                        <button data-season="summer" class="season-tab text-gray-500 hover:text-amber-800 relative py-4 px-4 sm:px-6 md:px-8 text-sm sm:text-base font-semibold focus:outline-none transition-colors duration-300">
+                            Summer
+                            <span class="absolute bottom-0 left-0 w-full h-0.5 bg-amber-500 transform scale-x-0 transition-transform duration-300"></span>
+                        </button>
+                    </div>
+
+                    <div class="relative w-full h-[60vh] md:h-[70vh] overflow-hidden">
+                        <div id="winter" class="season-panel absolute inset-0 bg-cover bg-center opacity-100 z-10" style="background-image: url('https://skardu.pk/wp-content/uploads/2020/01/skd.jpg');">
+                            <div class="absolute inset-0 bg-black bg-opacity-30"></div>
+                            <div id="winter-effects" class="absolute inset-0"></div> </div>
+                        <div id="autumn" class="season-panel absolute inset-0 bg-cover bg-center opacity-0 z-0" style="background-image: url('https://traveloguers.com/wp-content/uploads/2024/02/Khaplu-Skardu-Gilgit-Baltistan.webp');">
+                            <div class="absolute inset-0 bg-black bg-opacity-30"></div>
+                            <div id="autumn-effects" class="absolute inset-0"></div> </div>
+                        <div id="spring" class="season-panel absolute inset-0 bg-cover bg-center opacity-0 z-0" style="background-image: url('https://naturehikepakistan.pk/wp-content/uploads/2025/02/3c14def818-min.jpg');">
+                            <div class="absolute inset-0 bg-black bg-opacity-30"></div>
+                            <div id="spring-effects" class="absolute inset-0"></div> </div>
+                        <div id="summer" class="season-panel absolute inset-0 bg-cover bg-center opacity-0 z-0" style="background-image: url('https://www.apricottours.pk/wp-content/uploads/2024/12/Shangrilla-Skardu.jpeg');">
+                            <div class="absolute inset-0 bg-black bg-opacity-30"></div>
+                            <div id="summer-effects" class="absolute inset-0"></div> </div>
+
+                        <div class="absolute inset-0 flex items-center justify-center z-20 p-4">
+                            <div class="text-center">
+                                <h3 id="season-title" class="font-playfair text-white text-4xl md:text-6xl font-bold drop-shadow-lg transition-opacity duration-500">Winter Wonderland</h3>
+                                <p id="season-description" class="text-white text-lg mt-4 max-w-xl mx-auto drop-shadow-md transition-opacity duration-500">Embrace the crisp, serene beauty of a snow-covered landscape. Perfect for cozy evenings by the fire.</p>
+                                <button class="mt-8 bg-amber-800 hover:bg-amber-900 text-white font-bold py-3 px-8 rounded-lg shadow-lg hover:bg-gray-200 transform hover:scale-105 transition-all duration-300">
+                                    Book Your Seasonal Stay
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="rooms" class="py-20">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="font-playfair text-3xl md:text-4xl font-bold text-amber-900">Rest in Rustic Comfort</h2>
+                    <p class="mt-2 text-gray-600 max-w-2xl mx-auto">Each of our rooms is uniquely designed with natural wood and handcrafted details to provide a warm, inviting atmosphere.</p>
+                </div>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col">
+                        <div class="relative room-gallery">
+                            <img src="images/room1.webp" alt="The Forest King Suite - Main View" class="room-image w-full h-56 object-cover transition-opacity duration-500 ease-in-out">
+                            <img src="images/room1_s.webp" alt="The Forest King Suite - Bed Detail" class="room-image w-full h-56 object-cover absolute top-0 left-0 opacity-0 transition-opacity duration-500 ease-in-out">
+                            <img src="images/room1.webp" alt="The Forest King Suite - Bathroom View" class="room-image w-full h-56 object-cover absolute top-0 left-0 opacity-0 transition-opacity duration-500 ease-in-out">
+
+                            <button class="nav-btn prev-btn absolute top-1/2 left-2 -translate-y-1/2 bg-black bg-opacity-40 text-white p-2 rounded-full hover:bg-opacity-60 focus:outline-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                            </button>
+                            <button class="nav-btn next-btn absolute top-1/2 right-2 -translate-y-1/2 bg-black bg-opacity-40 text-white p-2 rounded-full hover:bg-opacity-60 focus:outline-none">
+                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                            </button>
+                        </div>
+                        <div class="p-6 flex flex-col flex-grow">
+                            <h3 class="font-playfair text-2xl font-bold text-amber-900">The Forest King Suite</h3>
+                            <p class="mt-2 text-gray-600 flex-grow">A spacious suite with a private balcony overlooking the forest, featuring a king-sized bed and a stone fireplace.</p>
+                            <div class="mt-4 pt-4 border-t grid grid-cols-2 gap-2 text-gray-700 text-sm">
+                                <div class="flex items-center space-x-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-800" viewBox="0 0 20 20" fill="currentColor"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" /></svg>
+                                    <span>2 Guests</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-800" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" /></svg>
+                                    <span>King Bed</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-800" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.934l-6.5 11.5a1 1 0 001.64 1.141l6.5-11.5a1 1 0 00-.368-1.785z" clip-rule="evenodd" /><path d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" /></svg>
+                                    <span>Fireplace</span>
+                                </div>
+                            </div>
+                            <div class="mt-6 flex justify-between items-center">
+                                 <div>
+                                    <span class="text-2xl font-bold text-amber-800">$250</span>
+                                    <span class="text-gray-500 text-sm">/ night</span>
+                                 </div>
+                                <a href="#booking" class="bg-amber-800 hover:bg-amber-900 text-white font-bold py-2 px-5 rounded-lg transition-colors text-sm whitespace-nowrap">Book Now</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col">
+                        <div class="relative room-gallery">
+                               <img src="images/room2.webp" alt="The Weaver's Loft - Main View" class="room-image w-full h-56 object-cover transition-opacity duration-500 ease-in-out">
+                            <img src="images/room2_window.webp" alt="The Weaver's Loft - Window View" class="room-image w-full h-56 object-cover absolute top-0 left-0 opacity-0 transition-opacity duration-500 ease-in-out">
+                            <img src="images/room2_detail.webp" alt="The Weaver's Loft - Detail" class="room-image w-full h-56 object-cover absolute top-0 left-0 opacity-0 transition-opacity duration-500 ease-in-out">
+
+                            <button class="nav-btn prev-btn absolute top-1/2 left-2 -translate-y-1/2 bg-black bg-opacity-40 text-white p-2 rounded-full hover:bg-opacity-60 focus:outline-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                            </button>
+                            <button class="nav-btn next-btn absolute top-1/2 right-2 -translate-y-1/2 bg-black bg-opacity-40 text-white p-2 rounded-full hover:bg-opacity-60 focus:outline-none">
+                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                            </button>
+                        </div>
+                        <div class="p-6 flex flex-col flex-grow">
+                            <h3 class="font-playfair text-2xl font-bold text-amber-900">The Weaver's Loft</h3>
+                            <p class="mt-2 text-gray-600 flex-grow">A cozy and intimate loft space perfect for couples, with warm wooden interiors and a skylight for stargazing.</p>
+                            <div class="mt-4 pt-4 border-t grid grid-cols-2 gap-2 text-gray-700 text-sm">
+                                <div class="flex items-center space-x-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-800" viewBox="0 0 20 20" fill="currentColor"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" /></svg>
+                                    <span>2 Guests</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-800" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" /></svg>
+                                    <span>Queen Bed</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-800" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                                    <span>Skylight</span>
+                                </div>
+                            </div>
+                            <div class="mt-6 flex justify-between items-center">
+                                <div>
+                                    <span class="text-2xl font-bold text-amber-800">$180</span>
+                                    <span class="text-gray-500 text-sm">/ night</span>
+                                </div>
+                                <a href="#booking" class="bg-amber-800 hover:bg-amber-900 text-white font-bold py-2 px-5 rounded-lg transition-colors text-sm whitespace-nowrap">Book Now</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </section>
+
+        <section id="dining" class="py-20 bg-FBF5EE">
+            <div class="container mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
+                 <div>
+                    <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=2070&auto=format&fit=crop" alt="Rustic and elegant dining hall of the guesthouse" class="rounded-xl shadow-xl w-full h-auto">
+                </div>
+                <div>
+                    <h2 class="font-playfair text-3xl md:text-4xl font-bold text-amber-900">A Taste of the Mountains</h2>
+                    <p class="mt-4 text-gray-600">Our dining hall is the heart of The Khar Skardu, where culinary tradition meets local bounty. We serve farm-to-table dishes prepared with the freshest ingredients sourced from surrounding valleys, offering an authentic taste of the region's flavors.</p>
+                    <p class="mt-4 text-gray-600">Enjoy hearty breakfasts, leisurely lunches, and intimate dinners by the warmth of our grand stone fireplace. It's more than a meal; it's a celebration of heritage.</p>
+                     <button class="mt-6 bg-amber-800 hover:bg-amber-900 text-white font-bold py-2 px-6 rounded-lg transition-colors">View Our Menu</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="gallery" class="py-20 bg-amber-50">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="font-playfair text-3xl md:text-4xl font-bold text-amber-900">Moments Captured in Wood & Light</h2>
+                 <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="overflow-hidden rounded-xl shadow-lg"><img src="images/gallery1.webp" alt="Gallery Image 1" class="w-full h-full object-cover transform hover:scale-110 transition-transform duration-300"></div>
+                    <div class="overflow-hidden rounded-xl shadow-lg md:col-span-2"><img src="images/gallery2.webp" alt="Gallery Image 2" class="w-full h-full object-cover transform hover:scale-110 transition-transform duration-300"></div>
+                    <div class="overflow-hidden rounded-xl shadow-lg"><img src="images/gallery3.webp" alt="Gallery Image 3" class="w-full h-full object-cover transform hover:scale-110 transition-transform duration-300"></div>
+                    <div class="overflow-hidden rounded-xl shadow-lg md:col-span-2"><img src="images/gallery4.webp" alt="Gallery Image 4" class="w-full h-full object-cover transform hover:scale-110 transition-transform duration-300"></div>
+                    <div class="overflow-hidden rounded-xl shadow-lg"><img src="images/gallery5.webp" alt="Gallery Image 5" class="w-full h-full object-cover transform hover:scale-110 transition-transform duration-300"></div>
+                    <div class="overflow-hidden rounded-xl shadow-lg"><img src="images/gallery6.webp" alt="Gallery Image 6" class="w-full h-full object-cover transform hover:scale-110 transition-transform duration-300"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="blog" class="py-20 bg-amber-50">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="font-playfair text-3xl md:text-4xl font-bold text-amber-900">Local Journeys & Stories</h2>
+                    <p class="mt-2 text-gray-600 max-w-2xl mx-auto">From tranquil forest trails to vibrant local markets, your adventure starts here.</p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1501555088652-021faa106b9b?q=80&w=2073&auto=format&fit=crop" alt="Hiking trail" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <h3 class="font-playfair text-xl font-bold text-amber-900">The Hidden Waterfall Trail</h3>
+                            <p class="mt-2 text-gray-600">A guide to the breathtaking local hike that's a favorite among our guests.</p>
+                            <a href="#" class="mt-4 inline-block text-amber-800 font-bold hover:underline">Read More &rarr;</a>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                        <img src="images/blog1.webp" alt="Local artisan crafts" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <h3 class="font-playfair text-xl font-bold text-amber-900">A Taste of Tradition: Local Cuisine</h3>
+                            <p class="mt-2 text-gray-600">Explore the rich flavors and culinary heritage of the region's best dishes.</p>
+                            <a href="#" class="mt-4 inline-block text-amber-800 font-bold hover:underline">Read More &rarr;</a>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                        <img src="images/blog2.webp" alt="Stargazing" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <h3 class="font-playfair text-xl font-bold text-amber-900">Stargazing Nights at the Abode</h3>
+                            <p class="mt-2 text-gray-600">Why our secluded location offers one of the best views of the night sky.</p>
+                            <a href="#" class="mt-4 inline-block text-amber-800 font-bold hover:underline">Read More &rarr;</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="wooden-bg text-white">
+            <div class="container mx-auto px-6 py-12">
+                <div class="grid md:grid-cols-4 gap-8">
+                    <div>
+                        <h3 class="font-playfair text-2xl font-bold">Khar Skardu</h3>
+                        <p class="mt-2 text-amber-100 text-sm">Your home away from home, steeped in tradition.</p>
+                    </div>
+                     <div>
+                        <h4 class="font-bold text-lg text-amber-100">Quick Links</h4>
+                        <ul class="mt-4 space-y-2 text-sm">
+                            <li><a href="#about" class="hover:underline">About Us</a></li>
+                            <li><a href="#gallery" class="hover:underline">Gallery</a></li>
+                            <li><a href="#blog" class="hover:underline">Experiences</a></li>
+                            <li><a href="#" class="hover:underline">Contact</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                         <h4 class="font-bold text-lg text-amber-100">Contact</h4>
+                        <ul class="mt-4 space-y-2 text-sm">
+                            <li><p>123 Forest Lane, Mountain View, PK</p></li>
+                            <li><p>info@timberabode.com</p></li>
+                            <li><p>+92 300 1234567</p></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-lg text-amber-100">Follow Us</h4>
+                        <div class="flex space-x-4 mt-4">
+                            </div>
+                    </div>
+                </div>
+                <div class="mt-8 border-t border-amber-700 pt-6 text-center text-sm text-amber-200">
+                    <p>&copy; 2025 The Khar Skardu. All Rights Reserved.</p>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // --- Page Loader ---
+            const loader = document.getElementById('loading-screen');
+            const mainContent = document.getElementById('main-content');
+            
+            window.addEventListener('load', () => {
+                // Fade out loader
+                loader.style.opacity = '0';
+                
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                    // Show main content
+                    mainContent.style.display = 'block';
+                    // Restore scroll functionality
+                    document.body.style.overflow = 'auto';
+                }, 750); // Corresponds to transition duration
+            });
+
+
+            // --- Sticky Navbar on Scroll ---
+            const nav = document.getElementById('navbar');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) { // When scrolled more than 50px
+                    nav.classList.add('bg-black', 'bg-opacity-50', 'backdrop-blur-sm', 'shadow-lg');
+                    nav.classList.remove('py-4');
+                    nav.classList.add('py-2');
+                } else {
+                    nav.classList.remove('bg-black', 'bg-opacity-50', 'backdrop-blur-sm', 'shadow-lg');
+                    nav.classList.add('py-4');
+                    nav.classList.remove('py-2');
+                }
+            });
+
+            // --- Mobile menu toggle ---
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // --- Date Picker Logic ---
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('checkin').setAttribute('min', today);
+            document.getElementById('checkout').setAttribute('min', today);
+            document.getElementById('checkin').addEventListener('change', function() {
+                let checkinDate = this.value;
+                document.getElementById('checkout').setAttribute('min', checkinDate);
+            });
+
+            // --- Hero Slideshow ---
+            const slides = document.querySelectorAll('.hero-slideshow-image');
+            let currentSlide = 0;
+            const slideInterval = 5000;
+            if (slides.length > 0) {
+                function nextSlide() {
+                    slides[currentSlide].classList.remove('active');
+                    currentSlide = (currentSlide + 1) % slides.length;
+                    slides[currentSlide].classList.add('active');
+                }
+                setInterval(nextSlide, slideInterval);
+            }
+
+            // --- Room Card Gallery Slider ---
+            const galleries = document.querySelectorAll('.room-gallery');
+            galleries.forEach(gallery => {
+                const images = gallery.querySelectorAll('.room-image');
+                const prevBtn = gallery.querySelector('.prev-btn');
+                const nextBtn = gallery.querySelector('.next-btn');
+                let currentIndex = 0;
+
+                function showImage(index) {
+                    images.forEach((img, i) => {
+                        img.classList.toggle('opacity-0', i !== index);
+                        img.classList.toggle('z-10', i === index);
+                    });
+                }
+
+                prevBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    currentIndex = (currentIndex - 1 + images.length) % images.length;
+                    showImage(currentIndex);
+                });
+
+                nextBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    currentIndex = (currentIndex + 1) % images.length;
+                    showImage(currentIndex);
+                });
+
+                if(images.length > 0) {
+                   showImage(currentIndex);
+                }
+            });
+             
+            // --- Seasonal Showcase Logic ---
+            const tabs = document.querySelectorAll('.season-tab');
+            const panels = document.querySelectorAll('.season-panel');
+            const seasonTitle = document.getElementById('season-title');
+            const seasonDescription = document.getElementById('season-description');
+            let currentEffectsInterval = null;
+
+            const seasonData = {
+                winter: {
+                    title: "Winter Wonderland",
+                    description: "Embrace the crisp, serene beauty of a snow-covered landscape. Perfect for cozy evenings by the fire.",
+                    effectsContainerId: 'winter-effects',
+                    createEffect: () => {
+                        const flake = document.createElement('div');
+                        flake.innerHTML = '❄️';
+                        flake.className = 'absolute text-xl text-white opacity-80';
+                        flake.style.left = `${Math.random() * 100}%`;
+                        flake.style.animation = `fall ${Math.random() * 5 + 5}s linear infinite`;
+                        flake.style.top = '-10px';
+                        return flake;
+                    }
+                },
+                autumn: {
+                    title: "Autumn's Golden Embrace",
+                    description: "Witness the landscape transform into a canvas of gold, red, and orange. A photographer's dream.",
+                     effectsContainerId: 'autumn-effects',
+                    createEffect: () => {
+                        const leaf = document.createElement('div');
+                        leaf.innerHTML = '🍂';
+                        leaf.className = 'absolute text-2xl';
+                        leaf.style.left = `${Math.random() * 100}%`;
+                        leaf.style.animation = `fall ${Math.random() * 6 + 6}s linear infinite`;
+                        leaf.style.top = '-20px';
+                         leaf.style.transform = `rotate(${Math.random() * 360}deg)`;
+                        return leaf;
+                    }
+                },
+                spring: {
+                    title: "The Bloom of Spring",
+                    description: "Verdant valleys and blossoming wildflowers create a vibrant, refreshing atmosphere.",
+                    effectsContainerId: 'spring-effects',
+                    createEffect: () => {
+                        const petal = document.createElement('div');
+                        petal.innerHTML = '🌸';
+                        petal.className = 'absolute text-xl';
+                        petal.style.left = `${Math.random() * 100}%`;
+                        petal.style.animation = `fall ${Math.random() * 8 + 8}s linear infinite`;
+                        petal.style.top = '-20px';
+                        return petal;
+                    }
+                },
+                summer: {
+                    title: "Sun-Kissed Summer",
+                    description: "Enjoy long, sunny days perfect for exploring the lush green mountains and crystal-clear lakes.",
+                    effectsContainerId: 'summer-effects',
+                     createEffect: () => {
+                        const ray = document.createElement('div');
+                        ray.className = 'absolute bg-yellow-200 opacity-10';
+                        ray.style.left = `${Math.random() * 120 - 10}%`;
+                        ray.style.top = `${Math.random() * 120 - 10}%`;
+                        ray.style.width = `${Math.random() * 200 + 150}px`;
+                        ray.style.height = '2px';
+                        ray.style.transform = `rotate(${Math.random() * 360}deg)`;
+                         ray.style.animation = `shimmer-effect ${Math.random() * 4 + 2}s ease-in-out infinite alternate`;
+                        return ray;
+                    }
+                }
+            };
+
+             const styleSheet = document.createElement("style");
+            styleSheet.innerText = `
+                @keyframes fall {
+                    to {
+                        transform: translateY(100vh) rotate(360deg);
+                        opacity: 0;
+                    }
+                }
+                 @keyframes shimmer-effect {
+                    from { opacity: 0; }
+                    to { opacity: 0.1; }
+                }
+            `;
+            document.head.appendChild(styleSheet);
+            
+            function stopEffects() {
+                if (currentEffectsInterval) {
+                    clearInterval(currentEffectsInterval);
+                }
+                Object.values(seasonData).forEach(data => {
+                    const container = document.getElementById(data.effectsContainerId);
+                    if(container) container.innerHTML = '';
+                });
+            }
+
+            function startEffects(season) {
+                stopEffects();
+                const seasonConfig = seasonData[season];
+                const container = document.getElementById(seasonConfig.effectsContainerId);
+                if (!container) return;
+
+                currentEffectsInterval = setInterval(() => {
+                    const effect = seasonConfig.createEffect();
+                    container.appendChild(effect);
+                    setTimeout(() => {
+                        effect.remove();
+                    }, 10000); 
+                }, 200);
+            }
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const season = tab.dataset.season;
+                    
+                    // Update tabs UI
+                    tabs.forEach(t => {
+                        t.classList.remove('active-tab', 'text-amber-800');
+                        t.classList.add('text-gray-500');
+                        t.querySelector('span').classList.remove('scale-x-100');
+                        t.querySelector('span').classList.add('scale-x-0');
+                    });
+                    tab.classList.add('active-tab', 'text-amber-800');
+                    tab.classList.remove('text-gray-500');
+                    tab.querySelector('span').classList.remove('scale-x-0');
+                    tab.querySelector('span').classList.add('scale-x-100');
+
+                    // Update panels
+                    panels.forEach(panel => {
+                        if (panel.id === season) {
+                            panel.classList.remove('opacity-0', 'z-0');
+                            panel.classList.add('opacity-100', 'z-10');
+                        } else {
+                            panel.classList.remove('opacity-100', 'z-10');
+                            panel.classList.add('opacity-0', 'z-0');
+                        }
+                    });
+
+                    // Update text content with fade effect
+                    seasonTitle.classList.add('opacity-0');
+                    seasonDescription.classList.add('opacity-0');
+                    setTimeout(() => {
+                        seasonTitle.textContent = seasonData[season].title;
+                        seasonDescription.textContent = seasonData[season].description;
+                        seasonTitle.classList.remove('opacity-0');
+                        seasonDescription.classList.remove('opacity-0');
+                    }, 300);
+
+                    // Start seasonal effects
+                    startEffects(season);
+                });
+            });
+            
+             // Initial effects
+            startEffects('winter');
+        });
+    </script>
+</body>
+</html>

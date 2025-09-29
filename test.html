@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results - Khar Skardu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        /* Base and Theme Styles from Main Page */
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: #FBF5EE; /* A very light, warm cream */
+        }
+        .font-playfair {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        /* Custom styles for Flatpickr to match theme */
+        .flatpickr-calendar {
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: 1px solid #e2d9ce;
+        }
+        .flatpickr-months .flatpickr-month {
+            color: #6b4f4b;
+            fill: #6b4f4b;
+        }
+        .flatpickr-months .arrow {
+            fill: #6b4f4b;
+        }
+        .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange {
+            background: #92400e; /* amber-800 */
+            border-color: #92400e;
+        }
+        .flatpickr-day:hover {
+            background: #fef3c7; /* amber-100 */
+        }
+        .numInputWrapper .numInput {
+            color: #6b4f4b;
+        }
+
+        /* Loading Screen Styles */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            transition: opacity 0.75s ease-out;
+        }
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)),
+                        url('https://www.transparenttextures.com/patterns/dark-wood.png');
+            background-size: cover;
+            background-position: center;
+            color: #fff;
+            text-align: center;
+            position: relative;
+        }
+        .loading-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 70px;
+            font-weight: bold;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            background: linear-gradient(90deg, #d4af37, #b8860b, #d4af37);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: shimmer 3s linear infinite, fadeIn 2s ease forwards;
+            opacity: 0;
+        }
+        .loading-subtitle {
+            font-family: 'Cinzel', serif;
+            font-size: 36px;
+            color: #b0a39f;
+            letter-spacing: 3px;
+            margin-top: 15px;
+            opacity: 0;
+            animation: fadeIn 2s ease forwards;
+            animation-delay: 1.5s;
+        }
+        .loading-dots {
+            margin-top: 40px;
+            display: flex;
+        }
+        .dot {
+            width: 8px;
+            height: 8px;
+            margin: 0 4px;
+            background: #d4af37;
+            border-radius: 50%;
+            animation: bounce 1.2s infinite;
+        }
+        .dot:nth-child(2) { animation-delay: 0.2s; }
+        .dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes shimmer {
+            100% { background-position: 200% center; }
+        }
+        @keyframes fadeIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0.8); opacity: 0.6; }
+            40% { transform: scale(1.3); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="text-gray-800" style="overflow: hidden;">
+
+    <div id="loading-screen">
+        <div class="loading-container">
+            <div class="loading-title">KHAR</div>
+            <div class="loading-subtitle">Skardu</div>
+            <div class="loading-dots">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        </div>
+    </div>
+
+    <main id="main-content" style="display: none;">
+        <nav id="navbar" class="text-white px-6 py-4 flex justify-between items-center fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-black bg-opacity-50 backdrop-blur-sm shadow-lg">
+            <div class="container mx-auto flex justify-between items-center">
+                <a href="#" class="font-playfair text-2xl font-bold">Khar Skardu</a>
+                <div class="hidden md:flex space-x-6 items-center">
+                    <a href="#" class="hover:text-amber-200 transition-colors">Home</a>
+                    <a href="#" class="hover:text-amber-200 transition-colors">Rooms</a>
+                    <a href="#" class="hover:text-amber-200 transition-colors">Dining</a>
+                    <a href="#" class="hover:text-amber-200 transition-colors">Contact</a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container mx-auto px-6 pt-24 flex flex-col lg:flex-row gap-8">
+            <div class="w-full lg:w-2/3">
+                <h1 class="font-playfair text-3xl md:text-4xl font-bold text-amber-900 text-center mb-6">Available Rooms & Suites</h1>
+
+                <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                        <div class="space-y-1">
+                            <label for="checkin" class="text-sm font-semibold text-gray-600">Check-in</label>
+                            <input type="text" id="checkin" placeholder="Select Date" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-800">
+                        </div>
+                        <div class="space-y-1">
+                            <label for="checkout" class="text-sm font-semibold text-gray-600">Check-out</label>
+                            <input type="text" id="checkout" placeholder="Select Date" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-800">
+                        </div>
+                        <div class="space-y-1">
+                            <label for="guests" class="text-sm font-semibold text-gray-600">Guests</label>
+                            <input type="text" id="guests" value="1 Room, 2 Guests" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-800">
+                        </div>
+                        <button class="w-full bg-amber-800 hover:bg-amber-900 text-white font-bold p-2 rounded-lg transition-colors h-10 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                              <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                            </svg>
+                            Search
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex gap-2 mb-8">
+                    <input type="radio" id="topRated" name="sort" class="peer hidden" checked>
+                    <label for="topRated" class="cursor-pointer px-4 py-2 border border-gray-300 rounded-full text-sm font-medium text-gray-700 peer-checked:bg-amber-800 peer-checked:text-white peer-checked:border-amber-800 transition">Our Picks</label>
+                    <input type="radio" id="lowestPrice" name="sort" class="peer hidden">
+                    <label for="lowestPrice" class="cursor-pointer px-4 py-2 border border-gray-300 rounded-full text-sm font-medium text-gray-700 peer-checked:bg-amber-800 peer-checked:text-white peer-checked:border-amber-800 transition">Lowest Price</label>
+                </div>
+
+                <div class="room-card bg-white rounded-xl shadow-lg overflow-hidden flex flex-col md:flex-row mb-8 transition duration-300 hover:shadow-2xl hover:-translate-y-1">
+                    <div class="md:w-1/3">
+                        <img src="https://images.unsplash.com/photo-1560185893-a55de8537e49?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80" alt="Rustic Charm Room" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-6 flex flex-col justify-between flex-grow">
+                        <div>
+                            <h3 class="font-playfair text-2xl font-bold text-amber-900">The Rustic Charm Suite</h3>
+                            <p class="text-sm text-gray-500 mt-1">Accommodates 2 Guests</p>
+                            <div class="flex flex-wrap gap-2 mt-3">
+                                <span class="tag bg-amber-100 text-amber-800 text-xs font-semibold px-3 py-1 rounded-full">KING BED</span>
+                                <span class="tag bg-amber-100 text-amber-800 text-xs font-semibold px-3 py-1 rounded-full">FOREST VIEW</span>
+                                <span class="tag bg-amber-100 text-amber-800 text-xs font-semibold px-3 py-1 rounded-full">FIREPLACE</span>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t flex justify-between items-center">
+                            <div>
+                                <span class="text-xl font-bold text-amber-800">PKR 45,000</span>
+                                <span class="text-gray-500 text-sm">/ night</span>
+                            </div>
+                            <button class="quick-book-btn bg-amber-800 hover:bg-amber-900 text-white font-bold py-2 px-5 rounded-lg transition-colors text-sm whitespace-nowrap" data-room-id="1">Book Now</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="room-card bg-white rounded-xl shadow-lg overflow-hidden flex flex-col md:flex-row mb-8 transition duration-300 hover:shadow-2xl hover:-translate-y-1">
+                    <div class="md:w-1/3">
+                        <img src="https://images.unsplash.com/photo-1616594039964-ae9021a400a0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80" alt="Pine Loft Room" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-6 flex flex-col justify-between flex-grow">
+                        <div>
+                            <h3 class="font-playfair text-2xl font-bold text-amber-900">The Pine Loft</h3>
+                            <p class="text-sm text-gray-500 mt-1">Accommodates 2 Guests</p>
+                            <div class="flex flex-wrap gap-2 mt-3">
+                                <span class="tag bg-amber-100 text-amber-800 text-xs font-semibold px-3 py-1 rounded-full">QUEEN BED</span>
+                                <span class="tag bg-amber-100 text-amber-800 text-xs font-semibold px-3 py-1 rounded-full">BALCONY</span>
+                                <span class="tag bg-amber-100 text-amber-800 text-xs font-semibold px-3 py-1 rounded-full">BREAKFAST INCLUDED</span>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t flex justify-between items-center">
+                            <div>
+                                <span class="text-xl font-bold text-amber-800">PKR 52,000</span>
+                                <span class="text-gray-500 text-sm">/ night</span>
+                            </div>
+                            <button class="quick-book-btn bg-amber-800 hover:bg-amber-900 text-white font-bold py-2 px-5 rounded-lg transition-colors text-sm whitespace-nowrap" data-room-id="2">Book Now</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full lg:w-1/3">
+                <div id="checkoutSection" class="bg-white rounded-xl shadow-2xl p-8 sticky top-24 hidden">
+                    <h2 class="font-playfair text-3xl font-bold text-amber-900 text-center border-b pb-4 mb-6">Your Stay</h2>
+                    <form class="checkout-form">
+                        <div id="selectedRoomDetails" class="mb-6">
+                            </div>
+                        <div class="space-y-4">
+                            <div>
+                                <label for="fullName" class="text-sm font-semibold text-gray-600 block mb-1">Full Name</label>
+                                <input type="text" id="fullName" placeholder="Enter your name" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-800">
+                            </div>
+                            <div>
+                                <label for="email" class="text-sm font-semibold text-gray-600 block mb-1">Email Address</label>
+                                <input type="email" id="email" placeholder="Enter your email" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-800">
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-semibold text-gray-600 block mb-2">Payment Method</h3>
+                                <div class="payment-option border-2 border-amber-800 bg-amber-50 p-3 rounded-lg flex items-center gap-3">
+                                    <input type="radio" name="payment" id="payOnProperty" checked class="h-4 w-4 text-amber-800 focus:ring-amber-800">
+                                    <label for="payOnProperty" class="font-medium text-gray-700">Pay at Property</label>
+                                </div>
+                            </div>
+                            <button type="submit" class="w-full bg-amber-800 hover:bg-amber-900 text-white font-bold py-3 px-5 rounded-lg transition-colors text-lg">Confirm Booking</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- Page Loader ---
+            const loader = document.getElementById('loading-screen');
+            const mainContent = document.getElementById('main-content');
+            
+            window.addEventListener('load', () => {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                    mainContent.style.display = 'block';
+                    document.body.style.overflow = 'auto';
+                }, 750);
+            });
+
+            // --- Date Picker Initialization ---
+            flatpickr("#checkin", {
+                minDate: "today",
+                dateFormat: "F j, Y",
+            });
+            flatpickr("#checkout", {
+                minDate: new Date().fp_incr(1),
+                dateFormat: "F j, Y",
+            });
+
+            // --- Checkout Sidebar Logic ---
+            const checkoutSection = document.getElementById('checkoutSection');
+            document.querySelectorAll('.quick-book-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const roomCard = this.closest('.room-card');
+                    const roomTitle = roomCard.querySelector('h3').textContent;
+                    const roomPrice = roomCard.querySelector('.text-xl.font-bold').textContent;
+                    const perNight = roomCard.querySelector('.text-sm.text-gray-500').textContent;
+                    
+                    const roomDetailsContainer = document.getElementById('selectedRoomDetails');
+                    roomDetailsContainer.innerHTML = `
+                        <div class="bg-amber-50 p-4 rounded-lg border border-amber-200">
+                            <h4 class="font-playfair text-lg font-bold text-amber-900">${roomTitle}</h4>
+                            <p class="font-semibold text-amber-800">${roomPrice} <span class="font-normal text-sm text-gray-600">${perNight}</span></p>
+                        </div>`;
+                    
+                    checkoutSection.classList.remove('hidden');
+                    checkoutSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Booking</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Flatpickr CSS for date picker -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        :root {
+            --primary-green: #1F524A;
+            --secondary-green: #376C63;
+            --light-cream: #F8F4ED;
+            --text-dark: #333;
+            --text-light: #F8F4ED;
+            --accent-pink: #D07B88;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-color: var(--light-cream);
+            color: var(--text-dark);
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.3); /* Transparent background */
+            padding: 15px 0;
+            z-index: 1000;
+        }
+
+        .navbar-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8em;
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .nav-links {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+        .nav-links li {
+            margin-left: 30px;
+        }
+
+        .nav-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1.1em;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-pink);
+        }
+
+        /* Header */
+        header {
+            background-color: var(--primary-green);
+            color: var(--text-light);
+            padding: 20px 0;
+            position: relative;
+            overflow: hidden;
+            height: 700px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* Updated background image */
+            background-image: url('https://lh3.googleusercontent.com/p/AF1QipMWHN6lzaYdvfEgT6ILSnVkJdCq1LM9VSrNUBQU=s680-w680-h510-rw');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.4;
+            z-index: 0;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            text-align: center;
+        }
+
+        .header-content h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5em;
+            margin-bottom: 30px;
+            line-height: 1.2;
+        }
+
+        .booking-form {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 40px;
+        }
+
+        .booking-form input,
+        .booking-form button {
+            padding: 15px 25px;
+            border-radius: 50px;
+            border: none;
+            font-size: 1.1em;
+            font-family: 'Poppins', sans-serif;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .booking-form input {
+            background-color: white;
+            color: var(--text-dark);
+            width: 250px;
+            text-align: center;
+        }
+
+        .booking-form input::placeholder {
+            color: #888;
+        }
+
+        .booking-form button {
+            background-color: var(--accent-pink);
+            color: var(--text-light);
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 150px;
+        }
+
+        .booking-form button:hover {
+            background-color: #c26a76;
+        }
+
+        /* Hero Section (Gallery) */
+        .hero {
+            background-color: var(--light-cream);
+            padding: 80px 20px;
+            text-align: center;
+        }
+
+        .hero h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3em;
+            color: var(--primary-green);
+            margin-bottom: 60px;
+        }
+
+        .image-gallery {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            align-items: center;
+            position: relative;
+            transform: translateY(0%);
+        }
+
+        .gallery-item {
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 250px;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .gallery-item.large {
+            grid-column: span 2;
+            height: 450px;
+            align-self: center;
+        }
+
+        /* Adjust individual item positions for the "floating" effect */
+        .gallery-item:nth-child(1) { /* Left Small 1 */
+            grid-row: 1;
+            grid-column: 1;
+            transform: translateY(30px);
+        }
+        .gallery-item:nth-child(2) { /* Left Small 2 (with juice) */
+            grid-row: 2;
+            grid-column: 1;
+            transform: translateY(-30px);
+        }
+        .gallery-item:nth-child(3) { /* Center Large */
+            grid-row: 1 / span 2;
+            grid-column: 2 / span 2;
+        }
+        .gallery-item:nth-child(4) { /* Right Small 1 */
+            grid-row: 1;
+            grid-column: 4 / span 2;
+            transform: translateY(30px);
+        }
+        .gallery-item:nth-child(5) { /* Right Small 2 (building) */
+            grid-row: 2;
+            grid-column: 4 / span 2;
+            transform: translateY(-30px);
+        }
+
+
+        /* Stats Section */
+        .stats-section {
+            background-color: var(--primary-green);
+            color: var(--text-light);
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .stats-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 40px;
+        }
+
+        .stat-item {
+            text-align: center;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .stat-item i {
+            font-size: 3em;
+            margin-bottom: 15px;
+            color: var(--light-cream);
+        }
+
+        .stat-item h3 {
+            font-size: 2.5em;
+            margin: 0;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .stat-item p {
+            font-size: 1.1em;
+            margin-top: 5px;
+        }
+
+        /* Features Section */
+        .features-section {
+            background-color: var(--light-cream);
+            padding: 80px 20px;
+            text-align: center;
+        }
+
+        .features-section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.8em;
+            color: var(--primary-green);
+            margin-bottom: 60px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background-color: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.08);
+            text-align: left;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .feature-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .feature-card-content {
+            padding: 20px;
+        }
+
+        .feature-card-content h3 {
+            font-size: 1.4em;
+            color: var(--primary-green);
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        .feature-card-content p {
+            font-size: 0.95em;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            .navbar-container {
+                flex-direction: column;
+            }
+            .nav-links {
+                margin-top: 15px;
+                flex-direction: column;
+                gap: 10px;
+            }
+            .nav-links li {
+                margin-left: 0;
+            }
+
+            header {
+                height: 600px;
+            }
+
+            .header-content h1 {
+                font-size: 2.2em;
+            }
+
+            .booking-form {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .booking-form input,
+            .booking-form button {
+                width: 90%;
+            }
+
+            .hero h2 {
+                font-size: 2.5em;
+            }
+
+            .image-gallery {
+                grid-template-columns: 1fr;
+                gap: 15px;
+                transform: none;
+            }
+
+            .gallery-item {
+                height: 200px;
+            }
+
+            .gallery-item.large {
+                grid-column: 1;
+                grid-row: auto;
+                height: 350px;
+            }
+
+            .gallery-item:nth-child(1),
+            .gallery-item:nth-child(2),
+            .gallery-item:nth-child(3),
+            .gallery-item:nth-child(4),
+            .gallery-item:nth-child(5) {
+                grid-column: 1;
+                grid-row: auto;
+                transform: none;
+            }
+
+            .stats-container {
+                flex-direction: column;
+            }
+
+            .stat-item {
+                margin-bottom: 30px;
+            }
+
+            .features-section h2 {
+                font-size: 2.2em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-content h1 {
+                font-size: 1.8em;
+            }
+
+            .booking-form input,
+            .booking-form button {
+                font-size: 1em;
+                padding: 12px 20px;
+            }
+
+            .hero h2 {
+                font-size: 2em;
+            }
+
+            .gallery-item {
+                height: 180px;
+            }
+
+            .gallery-item.large {
+                height: 300px;
+            }
+
+            .stat-item h3 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="#" class="navbar-logo">HotelName</a>
+            <ul class="nav-links">
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Rooms</a></li>
+                <li><a href="#">Facilities</a></li>
+                <li><a href="#">Gallery</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header>
+        <div class="header-content">
+            <h1>Introducing Pakistan's 1st chain of budget hotel rooms!</h1>
+            <div class="booking-form">
+                <input type="text" placeholder="Where are you going?">
+                <input type="text" id="datePicker" placeholder="Check in - Check out">
+                <input type="text" placeholder="Rooms">
+                <button><i class="fas fa-search"></i> Search</button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h2>We Promise Service that Leaves Nothing to Ask for</h2>
+            <div class="image-gallery">
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1549216098-b86a8a2d1a3c?q=80&w=1964&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Tropical resort view">
+                </div>
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1628173950669-02607147b4d1?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Breakfast tray by the pool">
+                </div>
+                <div class="gallery-item large">
+                    <img src="https://images.unsplash.com/photo-1544719289-e58f00037a50?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Main resort pool with lounge chairs">
+                </div>
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1510414902507-67b140bb951a?q=80&w=1964&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Sunset beach view">
+                </div>
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1563911302283-d2bc129e7570?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Hotel exterior at dusk">
+                </div>
+            </div>
+        </section>
+
+        <section class="stats-section">
+            <div class="stats-container">
+                <div class="stat-item">
+                    <i class="fas fa-tree"></i>
+                    <h3>2000</h3>
+                    <p>Hectares of lands parings</p>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-bed"></i>
+                    <h3>160+</h3>
+                    <p>Guest rooms and services</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="features-section">
+            <h2>Finally, a place for all the things.</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <img src="https://images.unsplash.com/photo-1582719478250-c65a70617300?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Hotel room with balcony">
+                    <div class="feature-card-content">
+                        <h3>High Airflow</h3>
+                        <p>Rooms</p>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <img src="https://images.unsplash.com/photo-1566073771259-d368735ad7fa?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Large swimming pool">
+                    <div class="feature-card-content">
+                        <h3>5000 Sq. Ft.</h3>
+                        <p>Waterbody</p>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <img src="https://images.unsplash.com/photo-1555500918-687eb89736c0?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Underwater activity with diver">
+                    <div class="feature-card-content">
+                        <h3>Underwater</h3>
+                        <p>Activities</p>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <img src="https://images.unsplash.com/photo-1546990481-d419353995f5?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Golf ball on a golf course">
+                    <div class="feature-card-content">
+                        <h3>Full Fledged</h3>
+                        <p>Golf Course</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Flatpickr JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            flatpickr("#datePicker", {
+                mode: "range",
+                dateFormat: "Y-m-d",
+            });
+        });
+    </script>
+</body>
+</html>

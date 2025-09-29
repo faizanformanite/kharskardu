@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>360° Garden View - The Timber Abode</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden; /* Prevent scrollbars */
+            background-color: #000;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        canvas {
+            display: block; /* Remove default inline spacing */
+        }
+        #info {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            background-color: rgba(0, 0, 0, 0.6);
+            border-radius: 20px;
+            font-size: 16px;
+            text-align: center;
+            pointer-events: none; /* Make it non-interactive */
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            transition: opacity 1s ease-in-out;
+        }
+        #controls-container {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.6);
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+        .control-btn {
+            background: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background-color 0.3s;
+        }
+        .control-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        .control-btn svg {
+            width: 24px;
+            height: 24px;
+        }
+        #hotspot-info {
+            display: none;
+            position: absolute;
+            padding: 15px;
+            background: rgba(0,0,0,0.7);
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.3);
+            pointer-events: none;
+            max-width: 200px;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+    </style>
+</head>
+<body>
+    <div id="info">Loading Garden View...</div>
+    <div id="hotspot-info">
+        <strong>The Old Oak Tree</strong>
+        <p>This magnificent oak has been a centerpiece of our garden for over a century.</p>
+    </div>
+
+    <div id="controls-container">
+        <button class="control-btn" id="zoom-in" title="Zoom In">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M11 2a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm0 16V4m-8 7h16"/></svg>
+        </button>
+        <button class="control-btn" id="zoom-out" title="Zoom Out">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M11 2a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm-8 9h16"/></svg>
+        </button>
+        <button class="control-btn" id="autorotate-toggle" title="Toggle Autorotate">
+            <svg id="pause-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h4v16H6zm8 0h4v16h-4z"/></svg>
+            <svg id="play-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <button class="control-btn" id="fullscreen-toggle" title="Toggle Fullscreen">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M5 5h5V3H3v7h2zm5 14H5v-5H3v7h7zm9-14h-5v2h5v5h2V3zm-5 14h5v-5h2v7h-7z"/></svg>
+        </button>
+    </div>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.module.js",
+                "OrbitControls": "https://cdn.jsdelivr.net/npm/three@0.128.0/examples/jsm/controls/OrbitControls.js"
+            }
+        }
+    </script>
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'OrbitControls';
+
+        let camera, scene, renderer, controls;
+        let hotspots = [];
+        const raycaster = new THREE.Raycaster();
+        const pointer = new THREE.Vector2();
+
+        init();
+        animate();
+
+        function init() {
+            const container = document.body;
+            const infoElement = document.getElementById('info');
+
+            // Scene
+            scene = new THREE.Scene();
+
+            // Camera
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1100);
+            camera.position.set(0, 0, 0.1);
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            container.appendChild(renderer.domElement);
+            
+            // Controls
+            controls = new OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.screenSpacePanning = false;
+            controls.enableZoom = true; // Use buttons/wheel, not default controls
+            controls.enablePan = false;
+            controls.autoRotate = true;
+            controls.autoRotateSpeed = 0.5;
+
+            // 360 Sphere
+            const geometry = new THREE.SphereGeometry(500, 60, 40);
+            geometry.scale(-1, 1, 1);
+            
+            const texture = new THREE.TextureLoader().load(
+                'https://threejs.org/examples/textures/2294472375_24a3b8ef46_o.jpg',
+                () => {
+                    infoElement.textContent = 'Click and drag to explore';
+                     setTimeout(() => {
+                        if (infoElement) infoElement.style.opacity = '0';
+                    }, 3000);
+                },
+                undefined,
+                (err) => {
+                    console.error('An error happened while loading the texture.', err);
+                    infoElement.textContent = 'Error loading garden view.';
+                }
+            );
+
+            const material = new THREE.MeshBasicMaterial({ map: texture });
+            scene.add(new THREE.Mesh(geometry, material));
+
+            // Hotspot
+            const hotspotGeometry = new THREE.SphereGeometry(5, 32, 32);
+            const hotspotMaterial = new THREE.MeshBasicMaterial({
+                 color: 0xffffff,
+                 transparent: true,
+                 opacity: 0.7
+            });
+            const hotspot = new THREE.Mesh(hotspotGeometry, hotspotMaterial);
+            hotspot.position.set(-100, -20, -200);
+            hotspot.name = "oak-tree"; // For identification
+            scene.add(hotspot);
+            hotspots.push(hotspot);
+            
+            // Event Listeners
+            window.addEventListener('resize', onWindowResize);
+            document.getElementById('zoom-in').addEventListener('click', () => zoom(0.8));
+            document.getElementById('zoom-out').addEventListener('click', () => zoom(1.2));
+            document.getElementById('autorotate-toggle').addEventListener('click', toggleAutoRotate);
+            document.getElementById('fullscreen-toggle').addEventListener('click', toggleFullscreen);
+            window.addEventListener('wheel', onMouseWheel);
+            window.addEventListener('click', onPointerClick);
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+        
+        function onMouseWheel(event) {
+            event.preventDefault();
+            const fov = camera.fov + event.deltaY * 0.05;
+            camera.fov = THREE.MathUtils.clamp(fov, 25, 90);
+            camera.updateProjectionMatrix();
+        }
+
+        function zoom(factor) {
+            const fov = camera.fov * factor;
+            camera.fov = THREE.MathUtils.clamp(fov, 25, 90);
+            camera.updateProjectionMatrix();
+        }
+
+        function toggleAutoRotate() {
+            controls.autoRotate = !controls.autoRotate;
+            document.getElementById('pause-icon').style.display = controls.autoRotate ? 'block' : 'none';
+            document.getElementById('play-icon').style.display = controls.autoRotate ? 'none' : 'block';
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+        
+        function onPointerClick(event) {
+            pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+            pointer.y = - (event.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(pointer, camera);
+            const intersects = raycaster.intersectObjects(hotspots);
+            const hotspotInfo = document.getElementById('hotspot-info');
+
+            if (intersects.length > 0) {
+                hotspotInfo.style.display = 'block';
+                hotspotInfo.style.left = `${event.clientX + 15}px`;
+                hotspotInfo.style.top = `${event.clientY + 15}px`;
+            } else {
+                hotspotInfo.style.display = 'none';
+            }
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            // Pulse hotspot
+            const time = Date.now() * 0.005;
+            hotspots.forEach(hotspot => {
+                hotspot.material.opacity = 0.5 + Math.sin(time) * 0.2;
+            });
+            controls.update(); // only required if controls.enableDamping = true, or if controls.autoRotate = true
+            renderer.render(scene, camera);
+        }
+    </script>
+</body>
+</html>
+

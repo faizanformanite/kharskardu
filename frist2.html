@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Rooms - HotelName</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 80px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2c3e50;
+            text-decoration: none;
+        }
+
+        .logo span {
+            color: #e74c3c;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav ul li {
+            margin-left: 30px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #2c3e50;
+            font-weight: 500;
+            font-size: 16px;
+            transition: color 0.3s;
+        }
+
+        nav ul li a:hover {
+            color: #e74c3c;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #2c3e50;
+            cursor: pointer;
+        }
+
+        /* Page Title */
+        .page-title {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                        url('https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80');
+            background-size: cover;
+            background-position: center;
+            padding: 80px 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .page-title h1 {
+            font-size: 42px;
+            margin-bottom: 15px;
+        }
+
+        .page-title p {
+            font-size: 18px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Main Content */
+        .main-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+            display: flex;
+            gap: 30px;
+        }
+
+        /* Filters Sidebar */
+        .filters-sidebar {
+            flex: 0 0 280px;
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .filter-section {
+            margin-bottom: 30px;
+        }
+
+        .filter-section h3 {
+            font-size: 18px;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .filter-options {
+            list-style: none;
+        }
+
+        .filter-options li {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .filter-options input[type="checkbox"] {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+        }
+
+        .filter-options label {
+            cursor: pointer;
+            color: #555;
+        }
+
+        .filter-options input[type="checkbox"]:checked + label {
+            color: #e74c3c;
+            font-weight: 500;
+        }
+
+        /* Sorting Options */
+        .sorting-options {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .sort-btn {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .sort-btn.active {
+            background-color: #e74c3c;
+            color: white;
+            border-color: #e74c3c;
+        }
+
+        .sort-btn:hover:not(.active) {
+            background-color: #f8f9fa;
+        }
+
+        /* Rooms Listing */
+        .rooms-listing {
+            flex: 1;
+        }
+
+        .results-count {
+            margin-bottom: 20px;
+            color: #7f8c8d;
+            font-size: 16px;
+        }
+
+        .room-card {
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 25px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .room-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .room-card-header {
+            display: flex;
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .room-image {
+            width: 200px;
+            height: 150px;
+            border-radius: 6px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .room-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .room-info {
+            flex: 1;
+            padding-left: 20px;
+        }
+
+        .room-info h3 {
+            font-size: 22px;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .room-location {
+            color: #7f8c8d;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .room-location i {
+            margin-right: 5px;
+            color: #e74c3c;
+        }
+
+        .room-category {
+            display: inline-block;
+            background-color: #f8f9fa;
+            color: #555;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .room-rating {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .rating-stars {
+            color: #f39c12;
+            margin-right: 10px;
+        }
+
+        .rating-value {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .room-card-body {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .price-info {
+            text-align: right;
+        }
+
+        .price-per-night {
+            font-size: 24px;
+            font-weight: 700;
+            color: #e74c3c;
+            margin-bottom: 5px;
+        }
+
+        .price-total {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .tax-info {
+            font-size: 12px;
+            color: #95a5a6;
+        }
+
+        .book-btn {
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 16px;
+        }
+
+        .book-btn:hover {
+            background-color: #1a252f;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 50px 20px 30px;
+            margin-top: 50px;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .footer-column {
+            flex: 1;
+            min-width: 250px;
+            margin-bottom: 30px;
+        }
+
+        .footer-column h3 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #e74c3c;
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-column ul li a {
+            color: #bdc3c7;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-column ul li a:hover {
+            color: #e74c3c;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-icons a {
+            color: #bdc3c7;
+            font-size: 20px;
+            transition: color 0.3s;
+        }
+
+        .social-icons a:hover {
+            color: #e74c3c;
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid #34495e;
+            margin-top: 30px;
+            color: #95a5a6;
+            font-size: 14px;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .filters-sidebar {
+                position: static;
+                width: 100%;
+            }
+            
+            .room-card-header {
+                flex-direction: column;
+            }
+            
+            .room-image {
+                width: 100%;
+                margin-bottom: 15px;
+            }
+            
+            .room-info {
+                padding-left: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                height: 70px;
+            }
+
+            nav ul {
+                display: none;
+                position: absolute;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background-color: #fff;
+                flex-direction: column;
+                padding: 20px;
+                box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+            }
+
+            nav ul.show {
+                display: flex;
+            }
+
+            nav ul li {
+                margin: 10px 0;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .page-title {
+                padding: 60px 20px;
+            }
+
+            .page-title h1 {
+                font-size: 32px;
+            }
+
+            .room-card-body {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .price-info {
+                text-align: left;
+                margin-bottom: 15px;
+            }
+
+            .book-btn {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-title h1 {
+                font-size: 28px;
+            }
+
+            .sorting-options {
+                flex-direction: column;
+            }
+
+            .sort-btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="logo">Hotel<span>Name</span></a>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="rooms.html" class="active">Rooms</a></li>
+                    <li><a href="#gallery">Gallery</a></li>
+                    <li><a href="#testimonials">Testimonials</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Page Title -->
+    <section class="page-title">
+        <h1>Available Rooms</h1>
+        <p>Find the perfect accommodation for your stay in Skardu</p>
+    </section>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Filters Sidebar -->
+        <aside class="filters-sidebar">
+            <div class="filter-section">
+                <h3>Category</h3>
+                <ul class="filter-options">
+                    <li><input type="checkbox" id="standard" checked><label for="standard">Standard</label></li>
+                    <li><input type="checkbox" id="executive" checked><label for="executive">Executive</label></li>
+                    <li><input type="checkbox" id="executive-family" checked><label for="executive-family">Executive Family</label></li>
+                    <li><input type="checkbox" id="junior-suite" checked><label for="junior-suite">Junior Suite</label></li>
+                    <li><input type="checkbox" id="twin" checked><label for="twin">Twin</label></li>
+                    <li><input type="checkbox" id="junior-suite-balcony" checked><label for="junior-suite-balcony">Junior Suite (With Balcony)</label></li>
+                    <li><input type="checkbox" id="suite-balcony" checked><label for="suite-balcony">Suite (With Balcony)</label></li>
+                </ul>
+            </div>
+            
+            <div class="filter-section">
+                <h3>Area</h3>
+                <ul class="filter-options">
+                    <li><input type="checkbox" id="airport-road" checked><label for="airport-road">Airport Road</label></li>
+                    <li><input type="checkbox" id="alameder-road" checked><label for="alameder-road">Alameder Road</label></li>
+                    <li><input type="checkbox" id="college-road" checked><label for="college-road">College Road</label></li>
+                    <li><input type="checkbox" id="katpana" checked><label for="katpana">Katpana</label></li>
+                </ul>
+            </div>
+            
+            <div class="filter-section">
+                <h3>Price Range</h3>
+                <div class="price-range">
+                    <input type="range" min="0" max="50000" value="25000" class="slider" id="priceRange">
+                    <div class="price-labels">
+                        <span>PKR 0</span>
+                        <span>PKR 50,000</span>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="book-btn" style="width: 100%; margin-top: 20px;">Apply Filters</button>
+        </aside>
+
+        <!-- Rooms Listing -->
+        <main class="rooms-listing">
+            <div class="sorting-options">
+                <button class="sort-btn active">Top Rated</button>
+                <button class="sort-btn">Lowest Price First</button>
+                <button class="sort-btn">Highest Price First</button>
+                <button class="sort-btn">Most Popular</button>
+            </div>
+            
+            <div class="results-count">Showing 7 of 7 rooms</div>
+            
+            <!-- Room Card 1 -->
+            <div class="room-card">
+                <div class="room-card-header">
+                    <div class="room-image">
+                        <img src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="LOKAL Rooms x Skardu (Mountain View)">
+                    </div>
+                    <div class="room-info">
+                        <h3>LOKAL Rooms x Skardu (Mountain View)</h3>
+                        <div class="room-location">
+                            <i class="fas fa-map-marker-alt"></i> Alameder Road
+                        </div>
+                        <span class="room-category">EXECUTIVE</span>
+                        <div class="room-rating">
+                            <div class="rating-stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                            <span class="rating-value">4.5/5 average</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="room-card-body">
+                    <div class="price-info">
+                        <div class="price-per-night">PKR 7,800 / night</div>
+                        <div class="price-total">1 room x 29 nights: PKR 217,500</div>
+                        <div class="tax-info">+10% tax</div>
+                    </div>
+                    <button class="book-btn">Book Now</button>
+                </div>
+            </div>
+            
+            <!-- Room Card 2 -->
+            <div class="room-card">
+                <div class="room-card-header">
+                    <div class="room-image">
+                        <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="LOKAL Rooms x Skardu (Katpana Retreat)">
+                    </div>
+                    <div class="room-info">
+                        <h3>LOKAL Rooms x Skardu (Katpana Retreat)</h3>
+                        <div class="room-location">
+                            <i class="fas fa-map-marker-alt"></i> Katpana
+                        </div>
+                        <span class="room-category">EXECUTIVE</span>
+                        <div class="room-rating">
+                            <div class="rating-stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <span class="rating-value">5.0/5 average</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="room-card-body">
+                    <div class="price-info">
+                        <div class="price-per-night">PKR 24,185 / night</div>
+                        <div class="price-total">1 room x 31 nights: PKR 700,785</div>
+                        <div class="tax-info">+10% tax</div>
+                    </div>
+                    <button class="book-btn">Book Now</button>
+                </div>
+            </div>
+            
+            <!-- Additional Room Cards -->
+            <div class="room-card">
+                <div class="room-card-header">
+                    <div class="room-image">
+                        <img src="https://images.unsplash.com/photo-1566665797739-1674de7a421a?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Mountain View Suite">
+                    </div>
+                    <div class="room-info">
+                        <h3>Mountain View Suite</h3>
+                        <div class="room-location">
+                            <i class="fas fa-map-marker-alt"></i> Airport Road
+                        </div>
+                        <span class="room-category">SUITE (WITH BALCONY)</span>
+                        <div class="room-rating">
+                            <div class="rating-stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                            </div>
+                            <span class="rating-value">4.0/5 average</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="room-card-body">
+                    <div class="price-info">
+                        <div class="price-per-night">PKR 12,500 / night</div>
+                        <div class="price-total">1 room x 29 nights: PKR 350,000</div>
+                        <div class="tax-info">+10% tax</div>
+                    </div>
+                    <button class="book-btn">Book Now</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="footer-container">
+            <div class="footer-column">
+                <h3>HotelName</h3>
+                <p>Pakistan's premier budget hotel chain, offering comfortable accommodations at affordable prices across the country.</p>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+            <div class="footer-column">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="rooms.html">Rooms</a></li>
+                    <li><a href="#gallery">Gallery</a></li>
+                    <li><a href="#testimonials">Testimonials</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Contact Us</h3>
+                <ul>
+                    <li><i class="fas fa-map-marker-alt"></i> 123 Hotel Street, Karachi, Pakistan</li>
+                    <li><i class="fas fa-phone"></i> +92 300 1234567</li>
+                    <li><i class="fas fa-envelope"></i> info@hotelname.com</li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2025 HotelName. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        document.querySelector('.mobile-menu-btn').addEventListener('click', function() {
+            document.querySelector('nav ul').classList.toggle('show');
+        });
+
+        // Sorting buttons functionality
+        document.querySelectorAll('.sort-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.sort-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                // In a real application, this would sort the rooms
+                alert('Sorting by: ' + this.textContent);
+            });
+        });
+
+        // Book Now buttons functionality
+        document.querySelectorAll('.book-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const roomName = this.closest('.room-card').querySelector('h3').textContent;
+                alert(`Booking initiated for: ${roomName}\nYou will be redirected to our booking system.`);
+            });
+        });
+
+        // Price range slider
+        const priceSlider = document.getElementById('priceRange');
+        const priceLabels = document.querySelector('.price-labels');
+        
+        priceSlider.addEventListener('input', function() {
+            const value = parseInt(this.value).toLocaleString();
+            priceLabels.innerHTML = `<span>PKR 0</span><span>PKR ${value}</span>`;
+        });
+    </script>
+</body>
+</html>
